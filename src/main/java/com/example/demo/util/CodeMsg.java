@@ -15,6 +15,8 @@ public class CodeMsg {
     public static CodeMsg SUCCESS=new CodeMsg(0,"success");
     public static CodeMsg SERVER_ERROR=new CodeMsg(500100,"server_error");
 
+    public static CodeMsg BIND_ERROR = new CodeMsg(500101, "Parameter verification exception:%s");
+
     //Login Module 5002XX
     public static CodeMsg PASSWORD_EMPTY=new CodeMsg(500201,"password can not be empty.");
     public static CodeMsg MOBILE_EMPTY=new CodeMsg(500202,"phone number can not be empty.");
@@ -22,5 +24,10 @@ public class CodeMsg {
     public static CodeMsg USER_NOT_EXIST=new CodeMsg(500204,"this user does not exist");
     public static CodeMsg PASSWORD_ERROR=new CodeMsg(500205,"password error");
 
+    public CodeMsg fillArgs(Object... args) {
+        int code = this.code;
+        String message = String.format(this.msg, args);
+        return new CodeMsg(code, message);
+    }
 
 }

@@ -33,13 +33,8 @@ public class UserController {
     @RequestMapping(value = "/loginVerify",method = RequestMethod.POST)
     public @ResponseBody Result<Boolean> verifyLogin(@Valid LoginVO loginVO){
         logger.info(loginVO.toString());
-        //param authentication
-        CodeMsg codeMsg=userService.login(loginVO);
+        userService.login(loginVO);
+        return Result.success(true);
 
-        if(codeMsg.getCode()==0){
-            return Result.success(true);
-        }else{
-            return Result.error(codeMsg);
-        }
     }
 }
