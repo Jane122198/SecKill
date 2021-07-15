@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 
 @Controller
 public class ConfigTestController {
@@ -44,7 +46,7 @@ public class ConfigTestController {
 
     @RequestMapping("/redis/set")
     public @ResponseBody Result<User> redisSet(){
-        User u=new User(1,"zhong","19981221zj");
+        User u=new User(13115018128L,"zhong","19981221zj","1a2b3c4d","",new Date(),new Date(),0);
         redisService.set(UserKey.getByName,"key2",u);
         User user=redisService.get(UserKey.getByName,"key2",User.class);
         return Result.success(user);

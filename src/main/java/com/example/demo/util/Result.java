@@ -1,13 +1,16 @@
 package com.example.demo.util;
 
+import lombok.Data;
+
+@Data
 public class Result<T> {
     private int code;
-    private String message;
+    private String msg;
     private T data;
 
     private Result(T data) {
         this.code=0;
-        this.message="success";
+        this.msg="success";
         this.data=data;
     }
 
@@ -16,7 +19,7 @@ public class Result<T> {
             return;
         }
         this.code=codeMsg.getCode();
-        this.message=codeMsg.getMessage();
+        this.msg=codeMsg.getMsg();
     }
 
     public static <T> Result<T> success(T data){
@@ -27,27 +30,4 @@ public class Result<T> {
         return new Result<T>(codeMsg);
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
-    public T getData() {
-        return data;
-    }
-
-    public void setData(T data) {
-        this.data = data;
-    }
 }
