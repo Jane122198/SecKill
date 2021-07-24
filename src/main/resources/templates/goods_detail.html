@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <!--    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>-->
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <title>Goods Detail</title>
+</head>
+<body>
+<div class="panel panel-default">
+    <div class="panel-heading">Goods Detail</div>
+    <div class="panel-body">
+        <span th:if="${user eq null}"> you need to login first<br/></span>
+    </div>
+    <table class="table" id="goodslist">
+        <tr>
+            <td>Name</td>
+            <td colspan="3" th:text="${goods.goodsName}"></td>
+        </tr>
+        <tr>
+            <td>Picture</td>
+            <td colspan="3"><img th:src="@{${goods.goodsImg}}" width="200" height="200" /></td>
+        </tr>
+        <tr>
+            <td>Start Date</td>
+            <td th:text="${#dates.format(goods.startDate, 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td id="miaoshaTip">
+                <input type="hidden" id="remainSeconds" th:value="${remainSeconds}" />
+                <span th:if="${saleGoodsStatus eq 0}">Start Time Left：<span id="countDown" th:text="${remainSeconds}"></span>seconds</span>
+                <span th:if="${saleGoodsStatus eq 1}">In progress.</span>
+                <span th:if="${saleGoodsStatus eq 2}">Finished.</span>
+            </td>
+            <td>
+                <form id="miaoshaForm" method="post" action="/buy/buyAction">
+                    <button class="btn btn-primary btn-block" type="submit" id="buyButton">Buy!!</button>
+                    <input type="hidden" name="goodsId" th:value="${goods.id}" />
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>Priginal Price</td>
+            <td colspan="3" th:text="${goods.goodsPrice}"></td>
+        </tr>
+        <tr>
+            <td>Sale Price</td>
+            <td colspan="3" th:text="${goods.salePrice}"></td>
+        </tr>
+        <tr>
+            <td>Stock</td>
+            <td colspan="3" th:text="${goods.stockCount}"></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+
+<script>
+    $(function(){
+        countDown();
+    });
+
+    function countDown(){
+        var remainSeconds = $("#remainSeconds").val();
+        var timeout;
+        if(remainSeconds > 0){
+            $("#buyButton").attr("disabled", true);
+            timeout = setTimeout(function(){
+                $("#countDown").text(remainSeconds - 1);
+                $("#remainSeconds").val(remainSeconds - 1);
+                countDown();
+            },1000);
+        }else if(remainSeconds == 0){//sec kill in progress
+            $("#buyButton").attr("disabled", false);
+            if(timeout){
+                clearTimeout(timeout);
+            }
+            $("#miaoshaTip").html("In Progress.");
+        }else{//秒杀已经结束
+            $("#buyButton").attr("disabled", true);
+            $("#miaoshaTip").html("Finished.");
+        }
+    }
+
+</script>
+
+</html>
