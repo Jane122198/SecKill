@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <!-- jquery -->
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <!-- bootstrap -->
+    <link rel="stylesheet" type="text/css" href="/bootstrap/css/bootstrap.min.css"/>
+    <script type="text/javascript" src="/bootstrap/js/bootstrap.min.js"></script>
+    <!-- jquery-validator -->
+    <script type="text/javascript" src="/jquery-validation/jquery.validate.min.js"></script>
+    <!--    <script type="text/javascript" src="/jquery-validation/localization/messages_zh.min.js"></script>-->
+    <!-- layer -->
+    <script type="text/javascript" src="/layer/layer.js"></script>
+    <!-- md5.js -->
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+    <!-- common.js -->
+    <script type="text/javascript" src="/js/common.js"></script>
+    <title>Goods Detail</title>
+</head>
+<body>
+
+<div class="panel panel-default">
+    <div class="panel-heading">Order Detail</div>
+    <div class="panel-body">
+        <span id="userTip">Please log in and then operate<br/></span>
+    </div>
+    <table class="table" id="goodslist">
+        <tr>
+            <td>Name</td>
+            <td colspan="3" id="goodsName"></td>
+        </tr>
+        <tr>
+            <td>Picture</td>
+            <td colspan="3"><img  id="goodsImg" width="200" height="200" /></td>
+        </tr>
+        <tr>
+            <td>Start Time</td>
+            <td id="startTime"></td>
+            <td >
+                <input type="hidden" id="remainSeconds" />
+                <span id="miaoshaTip"></span>
+            </td>
+            <td>
+                <button class="btn btn-primary btn-block" type="button" id="buyButton"onclick="buy()">Buy!!</button>
+                <input type="hidden" name="goodsId"  id="goodsId" />
+            </td>
+        </tr>
+        <tr>
+            <td>Original Price</td>
+            <td colspan="3" id="goodsPrice"></td>
+        </tr>
+        <tr>
+            <td>Current Price</td>
+            <td colspan="3"  id="miaoshaPrice"></td>
+        </tr>
+        <tr>
+            <td>Stock Number</td>
+            <td colspan="3"  id="stockCount"></td>
+        </tr>
+    </table>
+</div>
+
+</body>
+
+<script>
+    $(function(){
+        //countDown();
+        getDetail();
+    });
+
+    function getDetail(){
+        var goodsId = g_getQueryString("goodsId");
+        $.ajax({
+            url:"/goods/detail/"+goodsId,
+            type:"GET",
+            success:function(data){
+                if(data.code == 0){
+                    render(data.data);
+                }else{
+                    layer.msg(data.msg);
+                }
+            },
+            error:function(){
+                layer.msg("The client request is wrong");
+            }
+        });
+    }
+
+    function countDown(){
+        var remainSeconds = $("#remainSeconds").val();
+        var timeout;
+        if(remainSeconds > 0){//秒杀还没开始，倒计时
+            $("#buyButton").attr("disabled", true);
+            $("#miaoshaTip").html("There remain "+remainSeconds+" seconds");
+            timeout = setTimeout(function(){
+                $("#countDown").text(remainSeconds - 1);
+                $("#remainSeconds").val(remainSeconds - 1);
+                countDown();
+            },1000);
+        }else if(remainSeconds == 0){//秒杀进行中
+            $("#buyButton").attr("disabled", false);
+            if(timeout){
+                clearTimeout(timeout);
+            }
+            $("#miaoshaTip").html("In progress");
+        }else{//秒杀已经结束
+            $("#buyButton").attr("disabled", true);
+            $("#miaoshaTip").html("Finished");
+        }
+    }
+
+    function buy(){
+        $.ajax({
+            url:"/buy/buyAction",
+            type:"POST",
+            data:{
+                goodsId:$("#goodsId").val(),
+            },
+            success:function(data){
+                if(data.code == 0){
+
+                    window.location.href="/order_detail.htm?orderId="+data.data.id;
+                }else{
+                    layer.msg(data.msg);
+                }
+            },
+            error:function(){
+                layer.msg("The client request is wrong");
+            }
+        });
+
+    }
+
+    function render(detail){
+        var saleGoodsStatus = detail.saleGoodsStatus;
+        var remainSeconds = detail.remainSeconds;
+        var goods = detail.goods;
+        var user = detail.user;
+        if(user){
+            $("#userTip").hide();
+        }
+        $("#goodsName").text(goods.goodsName);
+        $("#goodsImg").attr("src", goods.goodsImg);
+        $("#startTime").text(new Date(goods.startDate).format("yyyy-MM-dd hh:mm:ss"));
+        $("#remainSeconds").val(remainSeconds);
+        $("#goodsId").val(goods.id);
+        $("#goodsPrice").text(goods.goodsPrice);
+        $("#miaoshaPrice").text(goods.salePrice);
+        $("#stockCount").text(goods.stockCount);
+        countDown();
+    }
+
+</script>
+
+</html>

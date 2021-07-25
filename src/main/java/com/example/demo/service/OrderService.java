@@ -4,6 +4,8 @@ import com.example.demo.dao.OrderDao;
 import com.example.demo.entity.OrderInfo;
 import com.example.demo.entity.SaleOrderInfo;
 import com.example.demo.entity.User;
+import com.example.demo.redis.OrderKey;
+import com.example.demo.redis.RedisService;
 import com.example.demo.vo.GoodsVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,15 @@ public class OrderService {
     @Autowired
     OrderDao orderDao;
 
+    @Autowired
+    RedisService redisService;
+
     public SaleOrderInfo getSaleOrderByUserIdGoodsId(long userId, long goodsId) {
-        return orderDao.getSaleOrderByUserIdAndGoodsId(userId, goodsId);
+        return redisService.get(OrderKey.getSaleOrderByUidGid, ""+userId+"_"+goodsId, SaleOrderInfo.class);
+    }
+
+    public OrderInfo getOrderById(long orderId) {
+        return orderDao.getOrderById(orderId);
     }
 
     @Transactional
@@ -38,6 +47,9 @@ public class OrderService {
         miaoshaOrder.setOrderId(orderId);
         miaoshaOrder.setUserId(user.getId());
         orderDao.insertMiaoshaOrder(miaoshaOrder);
+
+        redisService.set(OrderKey.getSaleOrderByUidGid, ""+user.getId()+"_"+goods.getId(), miaoshaOrder);
+
         return orderInfo;
     }
 }

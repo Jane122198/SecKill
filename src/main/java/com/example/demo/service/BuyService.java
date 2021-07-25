@@ -17,7 +17,7 @@ public class BuyService {
     OrderService orderService;
 
     @Transactional
-    public OrderInfo showSaleOrder(User user, GoodsVO goods) {
+    public OrderInfo buy(User user, GoodsVO goods) {
         //减库存 下订单 写入秒杀订单
         goodsService.reduceStock(goods);
         return orderService.createOrder(user, goods);

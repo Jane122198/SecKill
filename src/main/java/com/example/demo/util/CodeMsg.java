@@ -23,10 +23,15 @@ public class CodeMsg {
     public static CodeMsg MOBILE_ERROR=new CodeMsg(500203,"phone number is error.");
     public static CodeMsg USER_NOT_EXIST=new CodeMsg(500204,"this user does not exist");
     public static CodeMsg PASSWORD_ERROR=new CodeMsg(500205,"password error");
+    public static CodeMsg SESSION_ERROR = new CodeMsg(500210, "Session not exist or invalid");
 
     //Buy Module 5005XX
     public static CodeMsg SALE_OVER = new CodeMsg(500500, "The goods are sold out");
-    public static CodeMsg REPEATE_MIAOSHA = new CodeMsg(500501, "不能重复秒杀");
+    public static CodeMsg REPEATE_MIAOSHA = new CodeMsg(500501, "One user can only buy once");
+
+    //Order Module 5006XX
+    public static CodeMsg ORDER_NOT_EXIST = new CodeMsg(500600, "Order not exist");
+
 
 
     public CodeMsg fillArgs(Object... args) {
